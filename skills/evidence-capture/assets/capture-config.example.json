@@ -1,0 +1,96 @@
+{
+  "task": "EXAMPLE ONLY — replace with actual approved task",
+  "revision": "EXAMPLE ONLY — replace with verified source revision",
+  "baseUrl": "http://127.0.0.1:3000",
+  "sourceFiles": [
+    "src/App.tsx",
+    "tests/product.spec.ts",
+    "work/task/test-contract.json"
+  ],
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "screens": [
+    {
+      "ui_id": "UI-01",
+      "state": "empty",
+      "priority": "P0",
+      "path": "/example?dataset=synthetic-empty",
+      "viewport": "desktop",
+      "wait": {
+        "selector": "[data-ui='UI-01'][data-state='empty']"
+      },
+      "actions": [],
+      "keyboard": [
+        "Tab",
+        "Tab",
+        "Shift+Tab",
+        "Enter",
+        "Escape"
+      ],
+      "mock": "synthetic-empty"
+    },
+    {
+      "ui_id": "UI-01",
+      "state": "empty",
+      "priority": "P0",
+      "path": "/example?dataset=synthetic-empty",
+      "viewport": "mobile",
+      "wait": {
+        "selector": "[data-ui='UI-01'][data-state='empty']"
+      },
+      "actions": [],
+      "keyboard": [
+        "Tab",
+        "Shift+Tab",
+        "Enter",
+        "Escape"
+      ],
+      "mock": "synthetic-empty"
+    }
+  ],
+  "functional": {
+    "command": [
+      "npx",
+      "--no-install",
+      "playwright",
+      "test",
+      "tests/product.spec.ts",
+      "--reporter=json"
+    ],
+    "cases": [
+      {
+        "scenario": "S01",
+        "priority": "P0",
+        "test_id": "TEST-001",
+        "type": "e2e",
+        "observable_result": "EXAMPLE ONLY — accepted observable outcome 1",
+        "mock": "synthetic-empty",
+        "ui_ids": [
+          "UI-01"
+        ],
+        "test_file": "tests/product.spec.ts"
+      },
+      {
+        "scenario": "S02",
+        "priority": "P1",
+        "test_id": "TEST-002",
+        "type": "e2e",
+        "observable_result": "EXAMPLE ONLY — accepted observable outcome 2",
+        "mock": "synthetic-empty",
+        "ui_ids": [
+          "UI-01"
+        ],
+        "test_file": "tests/product.spec.ts"
+      }
+    ]
+  },
+  "testContract": "work/task/test-contract.json"
+}

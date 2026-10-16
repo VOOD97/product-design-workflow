@@ -1,0 +1,53 @@
+{
+  "task": "EXAMPLE ONLY — replace with actual approved task",
+  "revision": "EXAMPLE ONLY — replace with verified source revision",
+  "baseUrl": "http://127.0.0.1:3000",
+  "sourceFiles": [
+    "src/App.tsx",
+    "tests/product.spec.ts",
+    "work/task/test-contract.json"
+  ],
+  "functional": {
+    "command": [
+      "npx",
+      "--no-install",
+      "playwright",
+      "test",
+      "tests/product.spec.ts",
+      "--reporter=json"
+    ]
+  },
+  "capture_overrides": [
+    {
+      "ui_id": "UI-01",
+      "state": "empty",
+      "viewport": "desktop",
+      "wait": {
+        "selector": "[data-ui='UI-01'][data-state='empty']"
+      },
+      "actions": [],
+      "keyboard": [
+        "Tab",
+        "Tab",
+        "Shift+Tab",
+        "Enter",
+        "Escape"
+      ]
+    },
+    {
+      "ui_id": "UI-01",
+      "state": "empty",
+      "viewport": "mobile",
+      "wait": {
+        "selector": "[data-ui='UI-01'][data-state='empty']"
+      },
+      "actions": [],
+      "keyboard": [
+        "Tab",
+        "Shift+Tab",
+        "Enter",
+        "Escape"
+      ]
+    }
+  ]
+}

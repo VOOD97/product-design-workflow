@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Stand</title>
+<style>
+:root {
+  --bg: #F3F5F7;
+  --surface: #FFFFFF;
+  --ink: #17202A;
+  --muted: #566272;
+  --line: #D3D9E0;
+  --accent: #0A6482;
+  --accent-soft: #E3EFF4;
+  --on-accent: #FFFFFF;
+  --good: #1D6B3A;
+  --warn: #8A5600;
+  --bad: #A02B2B;
+  --focus: #0A6482;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161C; --surface: #19202A; --ink: #E6EBF1; --muted: #9AA7B6; --line: #2C3744;
+    --accent: #6CBBD9; --accent-soft: #1B3340; --on-accent: #0C1A22;
+    --good: #6FCB8F; --warn: #E0B25A; --bad: #EE8A8A; --focus: #6CBBD9;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161C; --surface: #19202A; --ink: #E6EBF1; --muted: #9AA7B6; --line: #2C3744;
+  --accent: #6CBBD9; --accent-soft: #1B3340; --on-accent: #0C1A22;
+  --good: #6FCB8F; --warn: #E0B25A; --bad: #EE8A8A; --focus: #6CBBD9;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 5.5rem; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; margin: 0; }
+h2 { font-size: 1.35rem; margin-bottom: .75rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0 0 .75rem; max-width: 72ch; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+header.top { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; gap: 1rem; align-items: baseline; justify-content: space-between; padding: .75rem 1.25rem .25rem; max-width: 1280px; margin: 0 auto; }
+.top-row h1 { font-size: 1.15rem; }
+.top-row .meta { color: var(--muted); font-size: .85rem; }
+.theme-btn { font: inherit; font-size: .85rem; background: none; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: .2rem .6rem; cursor: pointer; }
+nav[role="tablist"] { display: flex; gap: .25rem; overflow-x: auto; padding: 0 1.25rem; max-width: 1280px; margin: 0 auto; }
+nav[role="tablist"] button { font: inherit; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); padding: .55rem .75rem; cursor: pointer; white-space: nowrap; }
+nav[role="tablist"] button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+
+main { max-width: 1280px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+main:focus { outline: none; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.15rem; }
+.stack > * + * { margin-top: 1rem; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+dl.fields { display: grid; grid-template-columns: 9rem 1fr; gap: .6rem 1rem; margin: 0; }
+dl.fields dt { color: var(--muted); font-size: .85rem; padding-top: .1rem; }
+dl.fields dd { margin: 0; max-width: 72ch; }
+@media (max-width: 640px) { dl.fields { grid-template-columns: 1fr; gap: .1rem; } dl.fields dd { margin-bottom: .6rem; } }
+
+.chip { display: inline-block; font-size: .78rem; padding: .05rem .5rem; margin: 0 .25rem .25rem 0; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); text-decoration: none; background: var(--surface); }
+a.chip:hover { border-color: var(--accent); }
+.chip.ext { color: var(--muted); }
+.badge { display: inline-block; font-size: .78rem; padding: .05rem .5rem; border-radius: 4px; border: 1px solid currentColor; margin-right: .4rem; }
+.badge.good { color: var(--good); } .badge.warn { color: var(--warn); } .badge.bad { color: var(--bad); } .badge.neutral { color: var(--muted); }
+.mark { font-weight: 700; margin-right: .3rem; }
+
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+.cards { display: grid; gap: 1rem; }
+
+.refs-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 960px) { .refs-layout { grid-template-columns: 1fr; } }
+.filters { display: grid; gap: .5rem; margin-bottom: .75rem; }
+.filters label { font-size: .8rem; color: var(--muted); display: grid; gap: .15rem; }
+select, input[type="checkbox"] { font: inherit; }
+select { padding: .3rem .4rem; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+.ref-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.ref-item { display: grid; grid-template-columns: auto 1fr; gap: .6rem; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: .55rem .65rem; }
+.ref-item[aria-current="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.ref-item button.open { all: unset; cursor: pointer; display: block; }
+.ref-item button.open:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ref-item .t { font-weight: 600; }
+.ref-item .s { font-size: .82rem; color: var(--muted); }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 560px)); gap: .75rem; margin: .75rem 0 1rem; }
+figure.shot { margin: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
+figure.shot button { all: unset; display: block; width: 100%; cursor: zoom-in; }
+figure.shot button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+figure.shot img { display: block; width: 100%; height: auto; max-height: 420px; object-fit: contain; background: #fff; }
+figure.shot figcaption { padding: .4rem .6rem; font-size: .82rem; color: var(--muted); border-top: 1px solid var(--line); }
+.missing { border: 1px dashed var(--line); border-radius: 8px; padding: .6rem .8rem; color: var(--muted); margin: .75rem 0 1rem; }
+.compare-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .75rem; }
+.compare-cols .col { border: 1px solid var(--line); border-radius: 8px; padding: .6rem; background: var(--surface); }
+.compare-cols img { width: 100%; max-height: 260px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+
+.thumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+.thumbs a { display: block; width: 92px; text-decoration: none; font-size: .72rem; color: var(--muted); }
+.thumbs img { display: block; width: 92px; height: 64px; object-fit: cover; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+
+.tbl-wrap { position: relative; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; vertical-align: top; padding: .55rem .7rem; border-bottom: 1px solid var(--line); min-width: 8rem; }
+th { font-weight: 600; background: var(--accent-soft); position: sticky; top: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+td.cell { text-align: center; font-size: 1rem; }
+.hl { outline: 2px solid var(--accent); outline-offset: 2px; }
+dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; }
+dialog::backdrop { background: rgba(0,0,0,.72); }
+dialog img { max-width: 96vw; max-height: 90vh; background: #fff; display: block; }
+dialog .cap { background: var(--surface); color: var(--ink); padding: .4rem .7rem; font-size: .85rem; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <div><h1 id="stand-title">Research Stand</h1><div class="meta" id="stand-meta"></div></div>
+    <button class="theme-btn" id="theme-btn" type="button">Тема</button>
+  </div>
+  <nav role="tablist" aria-label="Разделы" id="tabs"></nav>
+</header>
+<main id="view" tabindex="-1"></main>
+<dialog id="lightbox" aria-label="Увеличенное изображение"><img alt=""><div class="cap"></div></dialog>
+
+<script id="stand-data" type="application/json">__STAND_DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("stand-data").textContent);
+  var TABS = [
+    ["overview", "Overview"], ["questions", "Research Questions"], ["references", "References"],
+    ["patterns", "Patterns"], ["comparison", "Comparison"], ["gaps", "Gaps & Opportunities"], ["sources", "Sources"]
+  ];
+  var PREV = {
+    observed: ["○", "наблюдается в выборке", "neutral"], standard: ["■", "конвенция с основанием", "good"], common: ["●", "повторяется в выборке", "neutral"],
+    divergent: ["◆", "решают по-разному", "warn"], rare: ["○", "редкий", "neutral"],
+    emerging: ["▲", "формируется", "warn"]
+  };
+  var STATUS = { answered: ["отвечен", "good"], partial: ["частично", "warn"], open: ["открыт", "bad"] };
+  var STRENGTH = { strong: ["сильно влияет", "bad"], moderate: ["влияет умеренно", "warn"], info: ["информативно", "neutral"] };
+  var REL = { high: "высокая", medium: "средняя", low: "низкая" };
+  var CELL = { yes: ["✓", "есть"], partial: ["◐", "частично"], no: ["✗", "нет"], unknown: ["?", "не известно"] };
+  var LEVEL = { direct: "Прямые конкуренты", analogous: "Аналоги", adjacent: "Смежные домены", unexpected: "Неожиданные паттерны" };
+  var ACCESS = { full: "полный", partial: "частичный", "docs-only": "только документация", "not-accessible": "недоступен" };
+
+  var byId = {}, kind = {};
+  ["research_questions", "systems", "references", "patterns", "gaps", "opportunities", "risks", "implications"].forEach(function (k) {
+    (D[k] || []).forEach(function (o) { byId[o.id] = o; kind[o.id] = k; });
+  });
+  var TARGET = { RQ: "questions", SYS: "sources", REF: "references", PAT: "patterns", GAP: "gaps", OPP: "gaps", RSK: "gaps", IMP: "gaps" };
+
+  function el(tag, attrs) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") n.className = attrs[k];
+      else if (k === "text") n.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+      else if (k === "href" && !/^(https?:\/\/|#|evidence\/|competitive-research\.md$)/i.test(String(attrs[k]))) { /* небезопасную ссылку не активировать */ }
+      else if (attrs[k] !== false && attrs[k] != null) n.setAttribute(k, attrs[k]);
+    });
+    (function add(list) {
+      for (var i = 0; i < list.length; i++) {
+        var c = list[i];
+        if (c == null || c === false) continue;
+        if (Array.isArray(c)) { add(c); continue; }
+        n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+      }
+    })(Array.prototype.slice.call(arguments, 2));
+    return n;
+  }
+  function title(o) { return o.title || o.name || o.question || o.text || o.id; }
+  function chip(id) {
+    var pre = id.split("-")[0];
+    if (TARGET[pre] && byId[id]) {
+      return el("a", { class: "chip", href: "#" + TARGET[pre] + "/" + id, title: String(title(byId[id])).slice(0, 140), text: id });
+    }
+    return el("span", { class: "chip ext", text: id });
+  }
+  function chips(ids) { var f = document.createDocumentFragment(); (ids || []).forEach(function (i) { f.appendChild(chip(i)); }); return f; }
+  function badge(text, tone) { return el("span", { class: "badge " + (tone || "neutral"), text: text }); }
+  function field(dl, label, value) {
+    if (value == null || value === "" || (Array.isArray(value) && !value.length)) return;
+    dl.appendChild(el("dt", { text: label }));
+    dl.appendChild(el("dd", null, typeof value === "string" ? document.createTextNode(value) : value));
+  }
+  function firstImage(ref) {
+    var ev = (ref.evidence || []).filter(function (e) { return /\.(png|jpe?g|webp|gif|svg)$/i.test(e.path || ""); });
+    return ev.length ? ev[0] : null;
+  }
+  function openLightbox(path, cap) {
+    var d = document.getElementById("lightbox");
+    d.querySelector("img").src = path; d.querySelector("img").alt = cap || "";
+    d.querySelector(".cap").textContent = cap || "";
+    if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+  }
+  document.getElementById("lightbox").addEventListener("click", function (e) { if (e.target.tagName !== "BUTTON") if (this.close) this.close(); else this.removeAttribute("open"); });
+
+  function shotFigure(ev) {
+    var isImg = /\.(png|jpe?g|webp|gif|svg)$/i.test(ev.path || "");
+    if (!isImg) return el("p", null, el("a", { href: ev.path, target: "_blank", rel: "noopener", text: ev.caption || ev.path }));
+    return el("figure", { class: "shot" },
+      el("button", { type: "button", "aria-label": "Увеличить: " + (ev.caption || ev.path), onclick: function () { openLightbox(ev.path, ev.caption); } },
+        el("img", { src: ev.path, alt: ev.caption || "", loading: "lazy" })),
+      el("figcaption", { text: ev.caption || "" }));
+  }
+
+  /* ---------- views ---------- */
+  var views = {};
+
+  views.overview = function (root) {
+    var o = D.overview || {};
+    var s = el("div", { class: "stack" });
+    var p = el("section", { class: "panel" }, el("h2", { text: "Резюме" }));
+    (o.summary || []).forEach(function (t) { p.appendChild(el("p", { text: t })); });
+    p.appendChild(el("p", { text: "Статус исследования: " + ((D.meta || {}).status || "partial") + "; гейт: " + ((D.meta || {}).gate || "не указан") }));
+    if (!(D.meta || {}).synthetic) p.appendChild(el("p", null, el("a", { href: "competitive-research.md", text: "Полный Markdown: согласование, предложения и результаты проверок" })));
+    (D.limitations || []).forEach(function (t) { p.appendChild(el("p", { class: "missing", text: t })); });
+    s.appendChild(p);
+    if ((o.key_findings || []).length) {
+      var ul = el("ul", { class: "stack", style: "padding-left:1.1rem;margin:0" });
+      o.key_findings.forEach(function (f) { ul.appendChild(el("li", null, f.text + " ", chips(f.refs))); });
+      s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Ключевые находки" }), ul));
+    }
+    var imp = (o.implications_top || []).map(function (i) { return byId[i]; }).filter(Boolean);
+    if (imp.length) {
+      var ul2 = el("ul", { class: "stack", style: "padding-left:1.1rem;margin:0" });
+      imp.forEach(function (i) {
+        ul2.appendChild(el("li", null, badge(STRENGTH[i.strength] ? STRENGTH[i.strength][0] : i.strength, STRENGTH[i.strength] ? STRENGTH[i.strength][1] : "neutral"), i.text + " ", chips(i.links)));
+      });
+      s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Что важно для задачи" }), ul2));
+    }
+    var lv = {}; (D.systems || []).forEach(function (x) { lv[x.level] = (lv[x.level] || 0) + 1; });
+    var withEv = (D.references || []).filter(function (r) { return firstImage(r); }).length;
+    var rq = {}; (D.research_questions || []).forEach(function (q) { rq[q.status] = (rq[q.status] || 0) + 1; });
+    var dl = el("dl", { class: "fields" });
+    field(dl, "Системы", Object.keys(LEVEL).filter(function (k) { return lv[k]; }).map(function (k) { return LEVEL[k] + ": " + lv[k]; }).join("; ") || "нет");
+    field(dl, "References", (D.references || []).length + ", из них со скриншотом: " + withEv);
+    field(dl, "Паттерны", String((D.patterns || []).length));
+    field(dl, "Вопросы", Object.keys(STATUS).filter(function (k) { return rq[k]; }).map(function (k) { return STATUS[k][0] + ": " + rq[k]; }).join("; ") || "нет");
+    s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Охват" }), dl));
+    root.appendChild(s);
+  };
+
+  views.questions = function (root) {
+    var cards = el("div", { class: "cards" });
+    (D.research_questions || []).forEach(function (q) {
+      var st = STATUS[q.status] || [q.status, "neutral"];
+      var dl = el("dl", { class: "fields" });
+      field(dl, "Зачем", q.why);
+      field(dl, "Связано с", chips(q.links));
+      field(dl, "Уровни поиска", (q.levels || []).map(function (l) { return LEVEL[l] || l; }).join(", "));
+      field(dl, "Ответ", q.answer);
+      field(dl, "Паттерны", chips(q.patterns));
+      cards.appendChild(el("section", { class: "panel", "data-id": q.id, id: q.id },
+        el("h3", null, badge(st[0], st[1]), el("span", { class: "muted", text: q.id + " " }), q.question), dl));
+    });
+    root.appendChild(cards);
+  };
+
+  var refState = { sys: "", pat: "", rel: "", ev: false, sel: null, cmp: [] };
+  views.references = function (root, focusId) {
+    if (focusId && byId[focusId]) refState.sel = focusId;
+    var refs = D.references || [];
+    var layout = el("div", { class: "refs-layout" });
+    var side = el("div"), main = el("div", { "aria-live": "polite" });
+    function opt(sel, v, t) { return el("option", { value: v, text: t, selected: sel === v ? "selected" : false }); }
+    var fSys = el("select", { id: "f-sys", onchange: function () { refState.sys = this.value; redraw(); } }, opt(refState.sys, "", "Все системы"));
+    (D.systems || []).forEach(function (s) { fSys.appendChild(opt(refState.sys, s.id, s.name)); });
+    var fPat = el("select", { id: "f-pat", onchange: function () { refState.pat = this.value; redraw(); } }, opt(refState.pat, "", "Все паттерны"));
+    (D.patterns || []).forEach(function (p) { fPat.appendChild(opt(refState.pat, p.id, p.name)); });
+    var fRel = el("select", { id: "f-rel", onchange: function () { refState.rel = this.value; redraw(); } },
+      opt(refState.rel, "", "Любая"), opt(refState.rel, "high", "Высокая"), opt(refState.rel, "medium", "Средняя"), opt(refState.rel, "low", "Низкая"));
+    var fEv = el("input", { type: "checkbox", id: "f-ev", onchange: function () { refState.ev = this.checked; redraw(); }, checked: refState.ev ? "checked" : false });
+    side.appendChild(el("div", { class: "filters" },
+      el("label", { for: "f-sys" }, "Система", fSys), el("label", { for: "f-pat" }, "Паттерн", fPat),
+      el("label", { for: "f-rel" }, "Релевантность", fRel),
+      el("label", { for: "f-ev", style: "display:flex;gap:.4rem;align-items:center" }, fEv, "Только со скриншотом")));
+    var list = el("ul", { class: "ref-list" }); side.appendChild(list);
+
+    function visible() {
+      return refs.filter(function (r) {
+        return (!refState.sys || r.system === refState.sys) && (!refState.pat || r.pattern === refState.pat) &&
+          (!refState.rel || (r.relevance && r.relevance.level === refState.rel)) && (!refState.ev || firstImage(r));
+      });
+    }
+    function redraw() {
+      list.textContent = "";
+      var vis = visible();
+      if (!vis.length) list.appendChild(el("li", { class: "muted", text: "Нет references под выбранные фильтры." }));
+      vis.forEach(function (r) {
+        var sys = byId[r.system];
+        var cb = el("input", { type: "checkbox", "aria-label": "Сравнить: " + r.id, checked: refState.cmp.indexOf(r.id) > -1 ? "checked" : false,
+          onchange: function () {
+            var i = refState.cmp.indexOf(r.id);
+            if (this.checked && i < 0) { if (refState.cmp.length >= 4) { this.checked = false; return; } refState.cmp.push(r.id); }
+            if (!this.checked && i > -1) refState.cmp.splice(i, 1);
+            drawMain();
+          } });
+        list.appendChild(el("li", { class: "ref-item", "aria-current": refState.sel === r.id ? "true" : false },
+          cb, el("button", { class: "open", type: "button", onclick: function () { refState.sel = r.id; location.hash = "#references/" + r.id; } },
+            el("span", { class: "t", text: r.id + " " + (r.title || "") }), el("br"),
+            el("span", { class: "s", text: (sys ? sys.name : r.system) + (byId[r.pattern] ? " → " + byId[r.pattern].name : "") }))));
+      });
+      drawMain();
+    }
+    function drawMain() {
+      main.textContent = "";
+      if (refState.cmp.length >= 2) {
+        var cols = el("div", { class: "compare-cols" });
+        refState.cmp.forEach(function (id) {
+          var r = byId[id], img = firstImage(r), sys = byId[r.system];
+          cols.appendChild(el("div", { class: "col" },
+            img ? el("img", { src: img.path, alt: img.caption || r.title || id }) : el("div", { class: "missing", text: "Нет скриншота" }),
+            el("h3", { text: id + " " + (r.title || "") }),
+            el("p", { class: "small muted", text: (sys ? sys.name : "") + (byId[r.pattern] ? " → " + byId[r.pattern].name : "") }),
+            el("p", { text: r.observation || "" })));
+        });
+        main.appendChild(el("section", { class: "panel", style: "margin-bottom:1rem" },
+          el("h2", { text: "Сравнение (" + refState.cmp.length + ")" }), cols,
+          el("p", null, el("button", { type: "button", class: "theme-btn", onclick: function () { refState.cmp = []; redraw(); }, text: "Сбросить сравнение" }))));
+      } else if (refState.cmp.length === 1) {
+        main.appendChild(el("p", { class: "muted small", text: "Отметьте ещё хотя бы один reference, чтобы сравнить скриншоты рядом (до четырёх)." }));
+      }
+      var r = byId[refState.sel];
+      if (!r || kind[refState.sel] !== "references") {
+        main.appendChild(el("p", { class: "muted", text: "Выберите reference слева." })); return;
+      }
+      var sys = byId[r.system];
+      var dl = el("dl", { class: "fields" });
+      var srcNode = el("span", null);
+      if (r.confidence) srcNode.appendChild(el("p", { text: "Уверенность: " + r.confidence + ". " + (r.confidence_reason || "") }));
+      if (r.source && r.source.url) srcNode.appendChild(el("a", { href: r.source.url, target: "_blank", rel: "noopener noreferrer", text: r.source.url }));
+      if (r.source && r.source.note) srcNode.appendChild(document.createTextNode((r.source.url ? " — " : "") + r.source.note));
+      if (r.source && r.source.accessed) srcNode.appendChild(el("span", { class: "muted", text: " (просмотрено " + r.source.accessed + ")" }));
+      field(dl, "Source", srcNode);
+      field(dl, "Observation", r.observation);
+      field(dl, "Pattern", r.pattern ? chips([r.pattern]) : "");
+      field(dl, "Interpretation", r.interpretation);
+      var rel = r.relevance || {};
+      var relNode = el("span", null, badge(REL[rel.level] || rel.level || "—", rel.level === "high" ? "good" : rel.level === "low" ? "neutral" : "warn"), rel.note || "", " ", chips(rel.rqs));
+      field(dl, "Relevance", relNode);
+      var shots = el("div", { class: "shots" });
+      (r.evidence || []).forEach(function (e) { shots.appendChild(shotFigure(e)); });
+      main.appendChild(el("section", { class: "panel", "data-id": r.id },
+        el("h2", { text: r.id + " " + (r.title || "") }),
+        el("p", { class: "muted small" }, "Система: ", sys ? chip(sys.id) : r.system, sys ? " " + sys.name : ""),
+        (r.evidence || []).length ? shots : el("div", { class: "missing", text: "Скриншота нет. Причина: " + (r.evidence_missing_reason || "не указана") }),
+        dl));
+    }
+    layout.appendChild(side); layout.appendChild(main); root.appendChild(layout);
+    redraw();
+  };
+
+  views.patterns = function (root) {
+    var cards = el("div", { class: "cards" });
+    (D.patterns || []).forEach(function (p) {
+      var pv = PREV[p.prevalence] || ["", p.prevalence || "", "neutral"];
+      var dl = el("dl", { class: "fields" });
+      field(dl, "Выборка", p.sample);
+      field(dl, "Основание распространённости", p.prevalence_basis);
+      field(dl, "How it works", p.how_it_works); field(dl, "Advantages", p.advantages);
+      field(dl, "Trade-offs", p.tradeoffs); field(dl, "Constraints", p.constraints);
+      field(dl, "Applicable scenarios", p.applicable); field(dl, "Counterexamples", p.counterexamples);
+      var th = el("div", { class: "thumbs" });
+      (p.refs || []).forEach(function (id) {
+        var r = byId[id]; if (!r) return;
+        var img = firstImage(r);
+        th.appendChild(el("a", { href: "#references/" + id, title: r.title || id },
+          img ? el("img", { src: img.path, alt: "", loading: "lazy" }) : el("div", { class: "missing small", style: "height:64px;padding:.2rem;margin:0", text: "нет скрина" }), id));
+      });
+      cards.appendChild(el("section", { class: "panel", id: p.id, "data-id": p.id },
+        el("h3", null, el("span", { class: "mark", "aria-hidden": "true", text: pv[0] }), p.name + " ", badge(pv[1], pv[2])), dl, th));
+    });
+    root.appendChild(cards);
+  };
+
+  views.comparison = function (root) {
+    var c = D.comparison || {}, s = el("div", { class: "stack" });
+    if (c.note) s.appendChild(el("p", { text: c.note }));
+    var cols = [["name", "Pattern"], ["how_it_works", "How it works"], ["advantages", "Advantages"], ["tradeoffs", "Trade-offs"], ["constraints", "Constraints"], ["applicable", "Applicable scenarios"]];
+    var thead = el("tr"); cols.forEach(function (k) { thead.appendChild(el("th", { scope: "col", text: k[1] })); });
+    var tb = el("tbody");
+    (D.patterns || []).forEach(function (p) {
+      var tr = el("tr", { "data-id": p.id });
+      cols.forEach(function (k, i) { tr.appendChild(i === 0 ? el("th", { scope: "row" }, el("a", { href: "#patterns/" + p.id, text: p.name })) : el("td", { text: p[k[0]] || "" })); });
+      tb.appendChild(tr);
+    });
+    s.appendChild(el("div", null, el("h2", { text: "Сравнение паттернов" }), el("div", { class: "tbl-wrap" }, el("table", null, el("caption", { class: "sr-only", text: "Сравнение паттернов по одинаковым критериям" }), el("thead", null, thead), tb))));
+    var m = c.feature_matrix;
+    if (m && (m.rows || []).length) {
+      var h2 = el("tr", null, el("th", { scope: "col", text: "Возможность" }), el("th", { scope: "col", text: "Требование" }));
+      (m.systems || []).forEach(function (id) { h2.appendChild(el("th", { scope: "col", text: byId[id] ? byId[id].name : id })); });
+      var tb2 = el("tbody");
+      m.rows.forEach(function (r) {
+        var tr = el("tr", null, el("th", { scope: "row", text: r.feature }), el("td", null, r.req ? chip(r.req) : "—"));
+        (m.systems || []).forEach(function (id) {
+          var v = (r.cells || {})[id] || "unknown", cv = CELL[v] || CELL.unknown;
+          tr.appendChild(el("td", { class: "cell" }, el("span", { "aria-hidden": "true", text: cv[0] }), el("span", { class: "sr-only", text: cv[1] }), (r.cell_notes || {})[id] ? el("p", { class: "small", text: r.cell_notes[id] }) : null));
+        });
+        tb2.appendChild(tr);
+      });
+      s.appendChild(el("div", null, el("h2", { text: "Матрица возможностей" }),
+        el("p", { class: "muted small", text: "✓ есть, ◐ частично, ✗ нет, ? не известно" }),
+        el("div", { class: "tbl-wrap" }, el("table", null, el("thead", null, h2), tb2))));
+    }
+    if (m && m.coverage_notes) s.appendChild(el("section", { class: "panel" }, el("h3", { text: "Сопоставление с требованиями" }), el("p", { text: m.coverage_notes })));
+    root.appendChild(s);
+  };
+
+  views.gaps = function (root) {
+    function list(items, render) {
+      var ul = el("ul", { class: "stack", style: "padding-left:1.1rem;margin:0" });
+      items.forEach(function (i) { ul.appendChild(el("li", { id: i.id, "data-id": i.id }, render(i))); });
+      return ul;
+    }
+    var s = el("div", { class: "stack" });
+    if ((D.gaps || []).length) s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Gaps" }),
+      list(D.gaps, function (g) { return [el("strong", { text: g.id + " " }), g.text + " ", chips(g.evidence)]; })));
+    if ((D.opportunities || []).length) s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Opportunities" }),
+      list(D.opportunities, function (o) { return [el("strong", { text: o.id + " " }), badge(o.label || "HYPOTHESIS", "warn"), o.text + " ", chips(o.evidence)]; })));
+    if ((D.risks || []).length) s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Constraints & risks" }),
+      list(D.risks, function (r) { return [el("strong", { text: r.id + " " }), badge(r.type === "risk" ? "риск" : "ограничение", "neutral"), r.text + " ", chips(r.evidence)]; })));
+    if ((D.implications || []).length) s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Implications for solution exploration" }),
+      list(D.implications, function (i) { var st = STRENGTH[i.strength] || [i.strength, "neutral"]; return [el("strong", { text: i.id + " " }), badge(st[0], st[1]), i.text + " ", chips(i.links), chips(i.evidence)]; })));
+    root.appendChild(s);
+  };
+
+  views.sources = function (root) {
+    var s = el("div", { class: "stack" });
+    Object.keys(LEVEL).forEach(function (lv) {
+      var items = (D.systems || []).filter(function (x) { return x.level === lv; });
+      if (!items.length) return;
+      var tb = el("tbody");
+      items.forEach(function (x) {
+        tb.appendChild(el("tr", { id: x.id, "data-id": x.id },
+          el("th", { scope: "row", text: x.id + " " + x.name }),
+          el("td", null, x.url ? el("a", { href: x.url, target: "_blank", rel: "noopener noreferrer", text: x.url }) : "—"),
+          el("td", { text: x.why || "" }), el("td", { text: (ACCESS[x.access] || x.access || "") + (x.accessed ? ", " + x.accessed : "") + (x.notes ? ". " + x.notes : "") })));
+      });
+      s.appendChild(el("section", null, el("h2", { text: LEVEL[lv] }), el("div", { class: "tbl-wrap" }, el("table", null,
+        el("thead", null, el("tr", null, el("th", { scope: "col", text: "Система" }), el("th", { scope: "col", text: "Ссылка" }), el("th", { scope: "col", text: "Почему включена" }), el("th", { scope: "col", text: "Доступ" }))), tb))));
+    });
+    if ((D.limitations || []).length) {
+      var ul = el("ul", { style: "padding-left:1.1rem;margin:0" });
+      D.limitations.forEach(function (t) { ul.appendChild(el("li", { text: t })); });
+      s.appendChild(el("section", { class: "panel" }, el("h2", { text: "Ограничения исследования" }), ul));
+    }
+    root.appendChild(s);
+  };
+
+  /* ---------- router ---------- */
+  var tabsEl = document.getElementById("tabs"), view = document.getElementById("view");
+  TABS.forEach(function (t) {
+    tabsEl.appendChild(el("button", { type: "button", role: "tab", id: "tab-" + t[0], "aria-controls": "view", onclick: function () { location.hash = "#" + t[0]; },
+      onkeydown: function (e) {
+        var i = TABS.findIndex(function (x) { return x[0] === t[0]; }), n = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+        if (n == null) return; n = (n + TABS.length) % TABS.length; location.hash = "#" + TABS[n][0]; document.getElementById("tab-" + TABS[n][0]).focus();
+      }, text: t[1] }));
+  });
+  function route() {
+    var parts = (location.hash || "#overview").slice(1).split("/"), tab = parts[0], id = parts[1];
+    if (!views[tab]) { tab = "overview"; id = null; }
+    TABS.forEach(function (t) { var b = document.getElementById("tab-" + t[0]); b.setAttribute("aria-selected", t[0] === tab ? "true" : "false"); b.tabIndex = t[0] === tab ? 0 : -1; });
+    view.textContent = ""; views[tab](view, id);
+    if (id) { var n = document.getElementById(id) || view.querySelector('[data-id="' + id + '"]'); if (n && tab !== "references") { n.classList.add("hl"); n.scrollIntoView({ block: "center" }); } }
+    else window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+
+  var meta = D.meta || {};
+  document.getElementById("stand-title").textContent = (meta.title || meta.task || "Research Stand");
+  document.title = "Research Stand: " + (meta.title || meta.task || "");
+  document.getElementById("stand-meta").textContent = ["Competitive / Analogous Research", meta.date, meta.status, meta.requirements_version ? "requirements v" + meta.requirements_version : ""].filter(Boolean).join("  |  ");
+  var root = document.documentElement, tb = document.getElementById("theme-btn");
+  tb.addEventListener("click", function () {
+    var dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+  });
+  route();
+})();
+</script>
+</body>
+</html>
